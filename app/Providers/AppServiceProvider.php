@@ -11,38 +11,30 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function boot(): void
     {
-        Model::preventLazyLoading(!app()->isProduction());
-        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
+        Model::shouldBeStrict(!app()->isProduction());
 
-        DB::whenQueryingForLongerThan(500, function (Connection $connection) {
-            logger()->channel('telegram')
-                ->debug('whenQueryingForLongerThan: '.$connection->query()->toSql());
-        });
+        if (app()->isProduction()){
 
-       $kernel = app(Kernel::class);
+            DB::listen(function ($query){
+                if($query->time > 100) {
+                    logger()->channel('telegram')
+                        ->debug('query longer than 1ms: '.$query->sql ,$query->bindings);
+                }
+            });
 
-       $kernel->whenRequestLifecycleIsLongerThan(
-           CarbonInterval::second(4),
-           function(Connection $connection){
-               logger()->channel('telegram')
-                   ->debug('whenRequestLifecycleIsLongerThan: '. $request()->url());
-       });
+            $kernel = app(Kernel::class);
+
+            $kernel->whenRequestLifecycleIsLongerThan(
+                CarbonInterval::second(4),
+                function(Connection $connection){
+                    logger()->channel('telegram')
+                        ->debug('whenRequestLifecycleIsLongerThan: '. $request()->url());
+                }
+            );
+
+        }
+
     }
 }

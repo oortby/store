@@ -1,0 +1,31 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+services:
+    -
+        class: App\PHPStan\Rules\DontForgetDebugRule
+        tags:
+            - phpstan.rules.rule
+
+parameters:
+
+    paths:
+        - app
+        - config
+        - tests
+        - database
+        - resources
+        
+    # The level 8 is the highest level
+    level: 6
+
+    ignoreErrors:
+        - '#Access to an undefined property Spatie\\Activitylog\\Contracts\\Activity::#'
+        - '#Access to an undefined property Spatie\\Activitylog\\Models\\Activity::#'
+        - '#Psr\\SimpleCache\\InvalidArgumentException is not subtype of Throwable#'
+        - '#ReflectionException is not subtype of Throwable#'
+
+    excludePaths:
+        - app/Models/Traits/ChangeLogging.php
+
+    checkMissingIterableValueType: false
