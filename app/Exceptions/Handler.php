@@ -52,7 +52,8 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (NotFoundHttpException $e) {
-            return  response('1223');
+            // TODO:  404
+            return response('404');
         });
     }
 }

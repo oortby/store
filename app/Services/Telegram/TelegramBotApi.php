@@ -11,21 +11,19 @@ use Throwable;
 
 final class TelegramBotApi
 {
-    public const HOST = 'https://api.telegram.org/bot';
+    public const HOST = 'https://api.telegram.org/bot123';
 
-    public static function sendMessage (string $token, int $chatId, string $text) : bool
+    public static function sendMessage (string $token, int $chatId, string $text) : ?bool
     {
-
         try {
             $response = Http::get(self::HOST. $token .'/sendMessage',[
                 'chat_id'=>$chatId,
                 'text'=>$text
-            ])->throw()>json();
-
+            ])->throw()->json();
             return  $response ?? false;
 
         }catch (Throwable $e){
-           report(new TelegramApiBotException($e->getMessage()));
+           report (new TelegramApiBotException($e->getMessage()));
            return false;
         }
     }
