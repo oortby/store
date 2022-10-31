@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
                 CarbonInterval::second(4),
                 function(Connection $connection){
                     logger()->channel('telegram')
-                        ->debug('whenRequestLifecycleIsLongerThan: '. $request()->url());
+                        ->debug('whenRequestLifecycleIsLongerThan: '. request()->url());
                 }
             );
 
