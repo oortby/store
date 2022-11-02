@@ -13,7 +13,6 @@
             ] )
 </head>
 <body class="antialiased">
-a
 @if(session()->has('message'))
     {{ session('message') }}
 @endif

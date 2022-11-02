@@ -18,9 +18,13 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-    public function index(): Factory|View|Application
+    public function index(): Factory|View|Application|RedirectResponse
     {
-        return view('auth.index');
+        flash()->info('Test');
+
+        return redirect()
+            ->route('home');
+        //return view('auth.index');
     }
 
     public function signUp(): Factory|View|Application
@@ -35,7 +39,7 @@ class AuthController extends Controller
 
     public function signIn(SignInFormRequest $request): RedirectResponse
     {
-        //TODO  3rd lesson Rate limit
+        //TODO 3rd lesson Rate limit
 
         if (!auth()->attempt($request->validated())) {
             return back()->withErrors([
@@ -52,13 +56,14 @@ class AuthController extends Controller
 
     public function store(SignUpFormRequest $request): RedirectResponse
     {
-        $user = User::create([
+        $user = User::query()->create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'password' => bcrypt($request->get('password')),
         ]);
 
         event(new Registered($user));
+
         auth()->login($user);
 
         return redirect()
@@ -83,11 +88,12 @@ class AuthController extends Controller
             $request->only('email')
         );
 
-        //TODO 3rd lesson Flash
+        if ($status === Password::RESET_LINK_SENT) {
+            flash()->info(__($status));
+            return back();
+        }
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
+        return back()->withErrors(['email' => __($status)]);
     }
 
     public function reset(string $token): Factory|View|Application
@@ -108,14 +114,16 @@ class AuthController extends Controller
                 ])->setRememberToken(str()->random(60));
 
                 $user->save();
-
                 event(new PasswordReset($user));
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+        if ($status === Password::RESET_LINK_SENT) {
+            flash()->info(__($status));
+            return redirect()->route('login');
+        }
+
+        return back()->withErrors(['email' => __($status)]);
     }
 
     public function github(): RedirectResponse

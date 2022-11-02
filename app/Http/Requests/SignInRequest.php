@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Worksome\RequestFactories\Concerns\HasFactory;
 
 class SignInRequest extends FormRequest
 {
