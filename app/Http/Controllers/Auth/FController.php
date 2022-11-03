@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\SignInFormRequest;
 use App\Http\Requests\SignUpFormRequest;
-use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Foundation\Application;
@@ -15,16 +15,14 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
 use Laravel\Socialite\Facades\Socialite;
+use User;
 
-class AuthController extends Controller
+class SignInController extends Controller
 {
     public function index(): Factory|View|Application|RedirectResponse
     {
-        flash()->info('Test');
 
-        return redirect()
-            ->route('home');
-        //return view('auth.index');
+       return view('auth.index');
     }
 
     public function signUp(): Factory|View|Application
