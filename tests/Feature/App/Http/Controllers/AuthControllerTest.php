@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Feature\App\Http\Controllers;
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\SignInController;
 use App\Http\Requests\SignInFormRequest;
 use App\Http\Requests\SignUpFormRequest;
 use App\Listeners\SendNewUserListener;
-use App\Models\User;
 use App\Notifications\NewUserNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
+use User;
 
 final class  AuthControllerTest extends TestCase
 {
@@ -27,7 +27,7 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_login_page_success(): void
     {
-        $this->get(action([AuthController::class, 'index']))
+        $this->get(action([SignInController::class, 'index']))
             ->assertOk()
             ->assertSee('Вход в аккаунт')
             ->assertViewHas('auth.index');
@@ -39,7 +39,7 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_sign_up_page_success(): void
     {
-        $this->get(action([AuthController::class, 'signUp']))
+        $this->get(action([SignInController::class, 'signUp']))
             ->assertOk()
             ->assertSee('Регистрация')
             ->assertViewHas('auth.sign-up');
@@ -57,7 +57,7 @@ final class  AuthControllerTest extends TestCase
         ]);
 
         $this->assertAuthenticatedAs($user)
-            ->delete(action([AuthController::class, 'logOut']));
+            ->delete(action([SignInController::class, 'logOut']));
 
         $this->assertGuest();
 
@@ -69,7 +69,7 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_forgot_page_success(): void
     {
-        $this->get(action([AuthController::class, 'forgot']))
+        $this->get(action([SignInController::class, 'forgot']))
             ->assertOk()
             ->assertViewHas('auth.forgot-password');
     }
@@ -91,7 +91,7 @@ final class  AuthControllerTest extends TestCase
         ]);
 
         $response = $this->post(
-            action([AuthController::class, 'signIn']),
+            action([SignInController::class, 'signIn']),
             $request
         );
 
@@ -121,7 +121,7 @@ final class  AuthControllerTest extends TestCase
         ]);
 
         $response = $this->post(
-            action([AuthController::class, 'store']),
+            action([SignInController::class, 'store']),
             $request
         );
 

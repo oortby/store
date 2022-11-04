@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Logging\Telegram\Exceptions;
+namespace Support\Logging\Telegram\Exceptions;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
