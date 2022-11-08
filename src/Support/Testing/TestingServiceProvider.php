@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Support\Testing;
 
-use App\Providers\FakerImageProvider;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Support\ServiceProvider;

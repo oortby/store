@@ -6,8 +6,9 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use DomainException;
 
-class Handler extends ExceptionHandler
+class  Handler extends ExceptionHandler
 {
     /**
      * A list of exception types with their corresponding custom log levels.
@@ -54,6 +55,12 @@ class Handler extends ExceptionHandler
         $this->renderable(function (NotFoundHttpException $e) {
             // TODO:  404
             return response('404');
+        });
+
+        $this->renderable(function (DomainException $e) {
+            flash()->alert($e->getMessage());
+
+            return back();
         });
     }
 }

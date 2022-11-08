@@ -22,23 +22,21 @@ final class AuthRegistrar implements RouteRegistrar
                 Route::get('/login',[SignInController::class, 'page'])->name('login');
                 Route::post('/login',[SignInController::class, 'handle'])
                     ->middleware('throttle:auth')
-                    ->name('signIn');
+                    ->name('login.handle');
+                 Route::delete('/logout', [SignInController::class, 'logOut'])->name('logOut');
 
-                #TODO 3rd  lesson
-                Route::get('/sign-up',[SignUpController::class, 'page'])->name('signUp');
+                Route::get('/sign-up',[SignUpController::class, 'page'])->name('register');
                 Route::post('/sign-up',[SignUpController::class, 'handle'])
                     ->middleware('throttle:auth')
-                    ->name('store');
-
-                Route::delete('/logout', [SignUpController::class, 'logOut'])->name('logOut');
+                    ->name('register.handle');
 
                 Route::get('/forgot-password', [ForgotPasswordController::class, 'page'])
                     ->middleware('guest')
-                    ->name('password.request');
+                    ->name('forgot');
 
                 Route::post('/forgot-password', [ForgotPasswordController::class, 'handle'])
                     ->middleware('guest')
-                    ->name('password.email');
+                    ->name('forgot.handle');
 
                 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'page'])
                     ->middleware('guest')
@@ -46,13 +44,13 @@ final class AuthRegistrar implements RouteRegistrar
 
                 Route::post('/reset-password', [ResetPasswordController::class, 'handle'])
                     ->middleware('guest')
-                    ->name('password.update');
+                    ->name('password-reset.handle');
 
-                Route::get('/auth/socialite/github', [SocialAuthController::class, 'github'])
-                    ->name('socialite.github');
+                Route::get('/auth/socialite/{driver}', [SocialAuthController::class, 'redirect'])
+                    ->name('socialite.redirect');
 
-                Route::get('/auth/socialite/githubCallback', [SocialAuthController::class, 'githubCallback'])
-                    ->name('socialite.github.callback');
+                Route::get('/auth/socialite/{driver}/callback', [SocialAuthController::class, 'callback'])
+                    ->name('socialite.callback');
             });
     }
 }

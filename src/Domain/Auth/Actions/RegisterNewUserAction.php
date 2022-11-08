@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Domain\Auth\Actions;
 
-use Domain\Auth\Actions\Contact\RegisterNewUserContract;
+
+use Domain\Auth\Actions\Contracts\RegisterNewUserContract;
 use Domain\Auth\Models\User;
 use Illuminate\Auth\Events\Registered;
 

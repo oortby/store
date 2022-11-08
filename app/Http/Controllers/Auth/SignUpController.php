@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SignUpFormRequest;
-use Domain\Auth\Actions\Contact\RegisterNewUserContract;
-use Illuminate\Auth\Events\Registered;
+use Domain\Auth\Actions\Contracts\RegisterNewUserContract;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Domain\Auth\Models\User;
 
 class SignUpController extends Controller
 {

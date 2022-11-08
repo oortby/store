@@ -3,22 +3,34 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Domain\Auth\Models\User;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
+use Throwable;
 
 class SocialAuthController extends Controller
 {
-    public function github(): RedirectResponse
+    public function redirect(string $driver): RedirectResponse
     {
-        return Socialite::driver('github')->redirect();
+        try {
+            return Socialite::driver($driver)
+                ->redirect();
+        }catch (Throwable $e){
+            throw new DomainException('Произошла ошибка или драйвер не поддерживается');
+
+        }
     }
 
-    public function githubCallback(): RedirectResponse
+    public function callback(string $driver): RedirectResponse
     {
-        $githubUser = Socialite::driver('github')->user();
+        if($driver !== 'github'){
+            throw new DomainException('Драйвер не поддерживается');
+        }
+        $githubUser = Socialite::driver($driver)->user();
 
         $user = User::query()->updateOrCreate([
-            'github_id' => $githubUser->id,
+            $driver.'_id' => $githubUser->id,
         ], [
             'name' => $githubUser->name ?? $githubUser->id,
             'email' => $githubUser->email,

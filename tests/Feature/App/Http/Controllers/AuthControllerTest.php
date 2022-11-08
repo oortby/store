@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Tests\Feature\App\Http\Controllers;
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Requests\SignInFormRequest;
 use App\Http\Requests\SignUpFormRequest;
 use App\Listeners\SendNewUserListener;
-use App\Notifications\NewUserNotification;
-use Illuminate\Auth\Events\Registered;
+use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
-use User;
+use Illuminate\Auth\Events\Registered;
+use Domain\Auth\Models\User;
 
 final class  AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
-
 
     /**
      * @test
@@ -27,10 +28,9 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_login_page_success(): void
     {
-        $this->get(action([SignInController::class, 'index']))
+        $this->get(action([SignInController::class, 'page']))
             ->assertOk()
-            ->assertSee('Вход в аккаунт')
-            ->assertViewHas('auth.index');
+            ->assertSee('Вход в аккаунт');
     }
 
     /**
@@ -39,10 +39,9 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_sign_up_page_success(): void
     {
-        $this->get(action([SignInController::class, 'signUp']))
+        $this->get(action([SignUpController::class, 'page']))
             ->assertOk()
-            ->assertSee('Регистрация')
-            ->assertViewHas('auth.sign-up');
+            ->assertSee('Регистрация');
     }
 
     /**
@@ -51,12 +50,12 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_logout_success(): void
     {
-        $user = User::factory()->create([
-            'email' => 'orion.by@mail.ru',
+        $user = UserFactory::new()->create([
+            'email' => 'orion1.by@mail.ru',
 
         ]);
 
-        $this->assertAuthenticatedAs($user)
+        $this->actingAs($user)
             ->delete(action([SignInController::class, 'logOut']));
 
         $this->assertGuest();
@@ -69,9 +68,8 @@ final class  AuthControllerTest extends TestCase
      **/
     public function it_forgot_page_success(): void
     {
-        $this->get(action([SignInController::class, 'forgot']))
-            ->assertOk()
-            ->assertViewHas('auth.forgot-password');
+        $this->get(action([ForgotPasswordController::class, 'page']))
+            ->assertOk();
     }
 
     /**
@@ -81,17 +79,19 @@ final class  AuthControllerTest extends TestCase
     public function it_sign_in_success(): void
     {
         $password = '12345678';
-        $user = User::factory()->create([
+        $user = UserFactory::new()->create([
             'email' => 'orion.by@mail.ru',
             'password' => bcrypt($password)
         ]);
+
+
         $request = SignInFormRequest::factory()->create([
             'email' => $user->email,
-            'pasword' => $user->password,
+            'password' => $password,
         ]);
 
         $response = $this->post(
-            action([SignInController::class, 'signIn']),
+            action([SignInController::class, 'handle']),
             $request
         );
 
@@ -105,28 +105,28 @@ final class  AuthControllerTest extends TestCase
      * @test
      * @return void
      **/
-    public function it_store_success(): void
+    public function it_sign_up_success(): void
     {
         Notification::fake();
         Event::fake();
 
         $request = SignUpFormRequest::factory()->create([
             'email' => 'orion.by@mail.ru',
-            'pasword' => '12345678',
-            'password_confirmation' => '123'
+            'password' => '1234567890',
+            'password_confirmation' => '1234567890'
         ]);
 
-        $this->assertDatabaseMissing('users', [
-            'email' => $request['email'],
+         $this->assertDatabaseMissing('users', [
+            'email' =>trim($request['email']),
         ]);
 
         $response = $this->post(
-            action([SignInController::class, 'store']),
+            action([SignUpController::class, 'handle']),
             $request
         );
 
-        $this->assertDatabaseHas('users', [
-            'email' => $request['email'],
+         $this->assertDatabaseHas('users', [
+            'email' => trim($request['email']),
         ]);
 
         $user = User::query()
@@ -134,6 +134,7 @@ final class  AuthControllerTest extends TestCase
             ->first();
 
         Event::assertDispatched(Registered::class);
+
         Event::assertListening(
             Registered::class,
             SendNewUserListener::class
@@ -145,7 +146,7 @@ final class  AuthControllerTest extends TestCase
 
 
         // Вызывается  на очередях
-        Notification::assertSentTo($user, NewUserNotification::class);
+        //Notification::assertSentTo($user, NewUserNotification::class);
 
         $this->assertAuthenticatedAs($user);
 
