@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-class RefreshCommand extends Command
+class  RefreshCommand extends Command
 {
     protected $signature = 'store:refresh';
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Models\HasSlug;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,8 +20,21 @@ class Product extends Model
         'brand_id',
         'thumbnail',
         'price',
+        'on_home_page',
+        'sorting'
 
     ];
+
+    /**
+     * @param Builder $query
+     * @return void
+     */
+    public function scopeHomePage (Builder $query): Builder
+    {
+        return  $query->where('on_home_page', true)
+            ->orderBy('sorting')
+            ->limit(6);
+    }
 
     public function brand() : BelongsTo
     {
