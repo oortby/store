@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Models\HasSlug;
+use App\Traits\Models\HasThumbnail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ class Product extends Model
 {
     use HasFactory;
     use HasSlug;
+    use HasThumbnail;
 
     protected $fillable = [
         'slug',
@@ -24,6 +26,11 @@ class Product extends Model
         'sorting'
 
     ];
+
+    protected function thumbnailDir(): string
+    {
+       return 'products';
+    }
 
     /**
      * @param Builder $query
