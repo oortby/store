@@ -25,7 +25,7 @@ class ResetPasswordController extends Controller
     {
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
+            static function ($user, $password) {
                 $user->forceFill([
                     'password' => bcrypt($password)
                 ])->setRememberToken(str()->random(60));

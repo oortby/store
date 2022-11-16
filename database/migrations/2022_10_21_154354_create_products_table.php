@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Brand;
-use App\Models\Category;
 use App\Models\Product;
+use Domain\Catalog\Models\Brand;
+use Domain\Catalog\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +11,7 @@ return new class extends Migration
 {
     public function up() : void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('products', static function (Blueprint $table) {
             $table->id();
             $table->string('slug')
                 ->unique();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('category_product', function (Blueprint $table){
+        Schema::create('category_product', static function (Blueprint $table){
             $table->id();
 
             $table->foreignIdFor(Category::class)

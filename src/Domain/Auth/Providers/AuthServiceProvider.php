@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Auth\Providers;
 
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -24,15 +24,17 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerPolicies();
+        //$this->registerPolicies();
 
         //
     }
 
-    public function register()
+    public function register(): void
     {
         $this->app->register(
             ActionsServiceProvider::class,
         );
     }
+
+
 }

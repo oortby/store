@@ -7,6 +7,7 @@ namespace App\Routing;
 use App\Contracts\RouteRegistrar;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ThumbnailController;
+use Domain\Auth\Routing\AuthRegistrar;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
 

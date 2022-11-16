@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\Auth\Routing;
+namespace App\Routing;
 
 use  App\Contracts\RouteRegistrar;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -40,7 +40,7 @@ final class AuthRegistrar implements RouteRegistrar
 
                 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'page'])
                     ->middleware('guest')
-                    ->name('password.reset');
+                    ->name('passwords.reset');
 
                 Route::post('/reset-password', [ResetPasswordController::class, 'handle'])
                     ->middleware('guest')

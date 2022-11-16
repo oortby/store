@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace Domain\Catalog\Models;
 
-use App\Traits\Models\HasSlug;
-use App\Traits\Models\HasThumbnail;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Support\Traits\HasSlug;
+use Support\Traits\HasThumbnail;
 
-class Brand extends Model
+class Category extends Model
 {
     use HasFactory;
     use HasSlug;
@@ -23,29 +24,23 @@ class Brand extends Model
         'sorting'
     ];
 
-    protected $casts = [
-        'on_home_page' => 'boolean'
-    ];
-
     protected function thumbnailDir(): string
     {
-        return 'brands';
+        return 'category';
     }
-
     /**
      * @param Builder $query
      * @return void
      */
     public function scopeHomePage (Builder $query): Builder
     {
-        return $query->where('on_home_page', true)
+        return  $query->where('on_home_page', true)
             ->orderBy('sorting')
             ->limit(6);
     }
 
-    public function product(): HasMany
+    public function products(): BelongsToMany
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(\App\Models\Product::class);
     }
-
 }

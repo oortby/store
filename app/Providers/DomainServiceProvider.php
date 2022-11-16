@@ -5,6 +5,7 @@ namespace App\Providers;
 
 use Domain\Auth\Providers\ActionsServiceProvider;
 use Domain\Auth\Providers\AuthServiceProvider;
+use Domain\Catalog\Providers\CatalogServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 final class  DomainServiceProvider extends ServiceProvider
@@ -18,8 +19,11 @@ final class  DomainServiceProvider extends ServiceProvider
     {
        $this->app->register(
            AuthServiceProvider::class,
-           ActionsServiceProvider::class
        );
+
+        $this->app->register(
+            CatalogServiceProvider::class,
+        );
     }
 
 }
