@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Support\ValueObjects;
 
-use http\Exception\InvalidArgumentException;
+use InvalidArgumentException;
+use Stringable;
 use Support\Traits\Makeable;
 
-final class Price
+final class Price implements Stringable
 {
     use Makeable;
 
@@ -28,6 +29,33 @@ final class Price
         if(!isset($this->currencies[$currency])){
             throw new InvalidArgumentException('Currency not allowed');
         }
+    }
+
+    public function raw(): int
+    {
+        return  $this->value;
+    }
+
+    public function value(): float|int
+    {
+        return  $this->value/ $this->precision;
+    }
+
+    public function currency(): string
+    {
+        return  $this->currency;
+    }
+
+    public function symbol(): string
+    {
+        return  $this->currencies[$this->currency];
+    }
+
+    public function __toString(): string
+    {
+        return number_format(
+            $this->value(),0,',',' ')
+            .' '.$this->symbol();
     }
 
 }

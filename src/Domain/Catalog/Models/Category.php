@@ -3,13 +3,17 @@
 namespace Domain\Catalog\Models;
 
 
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Product;
+use Domain\Catalog\QueryBuilders\CategoryQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Support\Traits\HasSlug;
 use Support\Traits\HasThumbnail;
 
+/**
+ * @method static Category|CategoryQueryBuilder query()
+ */
 class Category extends Model
 {
     use HasFactory;
@@ -28,19 +32,14 @@ class Category extends Model
     {
         return 'category';
     }
-    /**
-     * @param Builder $query
-     * @return void
-     */
-    public function scopeHomePage (Builder $query): Builder
+
+    public function newEloquentBuilder($query): CategoryQueryBuilder
     {
-        return  $query->where('on_home_page', true)
-            ->orderBy('sorting')
-            ->limit(6);
+        return new CategoryQueryBuilder($query);
     }
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(\App\Models\Product::class);
+        return $this->belongsToMany(Product::class);
     }
 }

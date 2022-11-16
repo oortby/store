@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Support\Casts\PriceCast;
 use Support\Traits\HasSlug;
 use Support\Traits\HasThumbnail;
 
@@ -27,6 +28,10 @@ class Product extends Model
         'on_home_page',
         'sorting'
 
+    ];
+
+    protected $casts = [
+          'price'=>PriceCast::class,
     ];
 
     protected function thumbnailDir(): string

@@ -12,7 +12,7 @@ use Illuminate\Http\RedirectResponse;
 
 class HomeController extends Controller
 {
-    public function page()  :Factory|View|Application|RedirectResponse
+    public function page():Factory|View|Application|RedirectResponse
     {
         $categories = Category::query()
             ->homePage()

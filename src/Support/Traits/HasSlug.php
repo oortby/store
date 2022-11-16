@@ -44,7 +44,6 @@ trait HasSlug
         while ($this->isSlugExists($slug)) {
             $i++;
             $slug = $originSlug . '-' . $i;
-            dd($slug);
         }
         return $slug;
     }
