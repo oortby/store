@@ -15,6 +15,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         Notification::fake();
+        // Если в тестах будет реальный запрос Http, то выпадает Exception
         Http::preventStrayRequests();
     }
 }
