@@ -9,16 +9,22 @@ return new class extends Migration
 
     public function up() : void
     {
-        Schema::create('{{ table }}', static function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('products', static function (Blueprint $table) {
+
+            $table->text('text')
+                ->nullable();
+
+            $table->fullText(['title','text']);
         });
     }
 
     public function down() : void
     {
         if(!app()->isProduction()) {
-            Schema::dropIfExists('{{ table }}');
-        }
+          Schema::table('products', static function (Blueprint $table) {
+               //
+          });
+       }
     }
+
 };

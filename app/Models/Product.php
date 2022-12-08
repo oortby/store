@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Laravel\Scout\Searchable;
 use Support\Casts\PriceCast;
 use Support\Traits\HasSlug;
 use Support\Traits\HasThumbnail;
@@ -18,10 +19,12 @@ class Product extends Model
     use HasFactory;
     use HasSlug;
     use HasThumbnail;
+    use Searchable;
 
     protected $fillable = [
         'slug',
         'title',
+        'text',
         'brand_id',
         'thumbnail',
         'price',
@@ -31,35 +34,65 @@ class Product extends Model
     ];
 
     protected $casts = [
-          'price'=>PriceCast::class,
+        'price' => PriceCast::class,
     ];
 
-    protected function thumbnailDir(): string
+   /* #[SearchUsingFullText(['title'])]
+    public function toSearchableArray(): array
     {
-       return 'products';
+        return [
+            'title' => $this->title,
+
+        ];
+    }*/
+
+    public function scopeFiltered(Builder $query): void
+    {
+        $query->when(request('filters.brands'), static function (Builder $q) {
+            $q->whereIn('brand_id', request('filters.brands'));
+        })->when(request('filters.price'), static function (Builder $q) {
+            $q->whereBetween('price', [
+                request('filters.price.from'),
+                request('filters.price.to'),
+            ]);
+        });
     }
 
-    /**
-     * @param Builder $query
-     * @return void
-     */
-    public function scopeHomePage (Builder $query): Builder
+    public function scopeSorted(Builder $query): void
     {
-        return  $query->where('on_home_page', true)
+        $query->when(request('sort'), static function (Builder $q) {
+            $column = request()->str('sort');
+
+            if ($column->contains(['price', 'title'])) {
+                $direction = $column->contains('-') ? 'DESC' : 'ASC';
+                $q->orderBy((string)$column->remove('-'), $direction);
+            }
+        });
+    }
+
+    public function scopeHomePage(Builder $query)
+    {
+        $query->where('on_home_page', true)
             ->orderBy('sorting')
             ->limit(6);
     }
 
-    public function brand() : BelongsTo
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
 
-    public function categories() : BelongsToMany
+    public function categories(): BelongsToMany
     {
-
         return $this->belongsToMany(Category::class);
     }
+
+    protected function thumbnailDir(): string
+    {
+        return 'products';
+    }
+
+
 
 
 }

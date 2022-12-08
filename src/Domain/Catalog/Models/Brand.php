@@ -40,7 +40,7 @@ class Brand extends Model
         return new BrandQueryBuilder($query);
     }
 
-    public function product(): HasMany
+    public function products(): HasMany
     {
         return $this->hasMany(\App\Models\Product::class);
     }
