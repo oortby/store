@@ -2,6 +2,7 @@
 
 namespace Domain\Catalog\Models;
 
+use App\Models\Product;
 use Domain\Catalog\QueryBuilders\BrandQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,17 +24,11 @@ class Brand extends Model
         'title',
         'thumbnail',
         'on_home_page',
-        'sorting'
+        'sorting',
     ];
-
     protected $casts = [
-        'on_home_page' => 'boolean'
+        'on_home_page' => 'boolean',
     ];
-
-    protected function thumbnailDir(): string
-    {
-        return 'brands';
-    }
 
     public function newEloquentBuilder($query): BrandQueryBuilder
     {
@@ -42,8 +37,11 @@ class Brand extends Model
 
     public function products(): HasMany
     {
-        return $this->hasMany(\App\Models\Product::class);
+        return $this->hasMany(Product::class);
     }
 
-
+    protected function thumbnailDir(): string
+    {
+        return 'brands';
+    }
 }

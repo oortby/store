@@ -29,22 +29,20 @@ class Product extends Model
         'thumbnail',
         'price',
         'on_home_page',
-        'sorting'
+        'sorting',
 
     ];
-
     protected $casts = [
         'price' => PriceCast::class,
     ];
 
-   /* #[SearchUsingFullText(['title'])]
-    public function toSearchableArray(): array
-    {
-        return [
-            'title' => $this->title,
-
-        ];
-    }*/
+    /* #[SearchUsingFullText(['title'])]
+     public function toSearchableArray(): array
+     {
+         return [
+             'title' => $this->title,
+         ];
+     }*/
 
     public function scopeFiltered(Builder $query): void
     {
@@ -52,8 +50,8 @@ class Product extends Model
             $q->whereIn('brand_id', request('filters.brands'));
         })->when(request('filters.price'), static function (Builder $q) {
             $q->whereBetween('price', [
-                request('filters.price.from'),
-                request('filters.price.to'),
+                request('filters.price.from', 0) * 100,
+                request('filters.price.to', 100000) * 100,
             ]);
         });
     }
@@ -65,7 +63,7 @@ class Product extends Model
 
             if ($column->contains(['price', 'title'])) {
                 $direction = $column->contains('-') ? 'DESC' : 'ASC';
-                $q->orderBy((string)$column->remove('-'), $direction);
+                $q->orderBy((string) $column->remove('-'), $direction);
             }
         });
     }
@@ -91,8 +89,4 @@ class Product extends Model
     {
         return 'products';
     }
-
-
-
-
 }

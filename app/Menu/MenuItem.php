@@ -13,9 +13,7 @@ final class MenuItem
     public function __construct(
         protected string $link,
         protected string $label,
-    )
-    {
-    }
+    ) {}
 
     public function link(): string
     {
@@ -31,7 +29,7 @@ final class MenuItem
     {
         $path = parse_url($this->link(), PHP_URL_PATH) ?? '/';
 
-        if($path === '/') {
+        if ($path === '/') {
             return request()->path() === $path;
         }
 
