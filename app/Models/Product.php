@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Pipeline\Pipeline;
 use Laravel\Scout\Searchable;
 use Support\Casts\PriceCast;
 use Support\Traits\HasSlug;
@@ -44,16 +45,31 @@ class Product extends Model
          ];
      }*/
 
-    public function scopeFiltered(Builder $query): void
+    public function scopeFiltered(Builder $query)
     {
+        return app(Pipeline::class)
+            ->send($query)
+            ->through(filters())
+            // Вместо via с указанием метода, можно использовать __invoke() по умолчанию
+            //->via('handle')
+            ->thenReturn();
+
+        /* II Вариант
+         // Через App/Providers/CatalogServiceProvider(FilterManager)
+         foreach(filters()  as $filter) {
+            $query = $filter->apply($query);
+        }*/
+
+
+        /*  I вариант
         $query->when(request('filters.brands'), static function (Builder $q) {
-            $q->whereIn('brand_id', request('filters.brands'));
-        })->when(request('filters.price'), static function (Builder $q) {
-            $q->whereBetween('price', [
-                request('filters.price.from', 0) * 100,
-                request('filters.price.to', 100000) * 100,
-            ]);
-        });
+             $q->whereIn('brand_id', request('filters.brands'));
+         })->when(request('filters.price'), static function (Builder $q) {
+             $q->whereBetween('price', [
+                 request('filters.price.from', 0) * 100,
+                 request('filters.price.to', 100000) * 100,
+             ]);
+         });*/
     }
 
     public function scopeSorted(Builder $query): void

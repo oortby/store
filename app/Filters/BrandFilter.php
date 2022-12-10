@@ -5,41 +5,41 @@ declare(strict_types=1);
 namespace App\Filters;
 
 use Domain\Catalog\Filters\AbstractFilter;
+use Domain\Catalog\Models\Brand;
 use Illuminate\Database\Eloquent\Builder;
 
-final class PriceFilter extends AbstractFilter
+final class BrandFilter extends AbstractFilter
 
 {
     public function title(): string
     {
-        return 'Цена';
+        return 'Бренды';
     }
 
     public function key(): string
     {
-        return 'price';
+        return 'brands';
     }
 
     public function apply(Builder $query): Builder
     {
         return $query->when($this->requestValue(), function (Builder $q) {
-            $q->whereBetween('price', [
-                $this->requestValue('from', 0) * 100,
-                $this->requestValue('to', 100000) * 100,
-            ]);
+            $q->whereIn('brand_id' ,$this->requestValue());
         });
     }
 
     public function values(): array
     {
-        return [
-            'from' => 0,
-            'to'   => 100000,
-        ];
+        return  Brand::query()
+            ->select(['id', 'title'])
+            ->has('products')
+            ->get()
+            ->pluck('title','id')
+            ->toArray();
     }
 
     public function view(): string
     {
-        return 'catalog.filters.price';
+        return 'catalog.filters.brands';
     }
 }

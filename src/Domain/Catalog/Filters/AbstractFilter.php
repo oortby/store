@@ -6,8 +6,14 @@ namespace Domain\Catalog\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
-abstract class AbstractFilter
+abstract class AbstractFilter implements \Stringable
 {
+    public function __invoke(Builder $query, $next)
+    {
+        $this->apply($query);
+        $next($query);
+    }
+
     abstract public function title(): string;
 
     abstract public function key(): string;
@@ -30,7 +36,7 @@ abstract class AbstractFilter
         //name = "filters[key]?[index]"
         return str($this->key())
             ->wrap('[', ']')
-            ->prepered('filters')
+            ->prepend('filters')
             ->when($index, fn($str) => $str->append("[$index]"))
             ->value();
     }
@@ -41,5 +47,12 @@ abstract class AbstractFilter
         return str($this->name($index))
             ->slug('_')
             ->value();
+    }
+
+    public function __toString(): string
+    {
+        return view($this->view(), [
+            'filter' => $this,
+        ])->render();
     }
 }

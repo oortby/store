@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
 
         if (app()->isProduction()){
 
-            DB::listen(function ($query){
+            DB::listen(static function ($query){
                 if($query->time > 100) {
                     logger()->channel('telegram')
                         ->debug('query longer than 1ms: '.$query->sql ,$query->bindings);
@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
 
             $kernel->whenRequestLifecycleIsLongerThan(
                 CarbonInterval::second(4),
-                function(Connection $connection){
+                function(){
                     logger()->channel('telegram')
                         ->debug('whenRequestLifecycleIsLongerThan: '. request()->url());
                 }
