@@ -22,6 +22,7 @@ class Product extends Model
     use HasThumbnail;
     use Searchable;
 
+
     protected $fillable = [
         'slug',
         'title',
@@ -104,5 +105,16 @@ class Product extends Model
     protected function thumbnailDir(): string
     {
         return 'products';
+    }
+
+    public function properties(): BelongsToMany
+    {
+        return $this->belongsToMany(Property::class)
+            ->withPivot('value');
+    }
+
+    public function optionValues(): BelongsToMany
+    {
+        return $this->belongsToMany(OptionValue::class);
     }
 }
