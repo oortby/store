@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ProductJsonProperties;
 use Domain\Catalog\Models\Brand;
 use Domain\Catalog\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,11 +32,23 @@ class Product extends Model
         'price',
         'on_home_page',
         'sorting',
+        'json_properties',
 
     ];
     protected $casts = [
-        'price' => PriceCast::class,
+        'price'           => PriceCast::class,
+        'json_properties' => 'array',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::created( static  function (Product $product) {
+            ProductJsonProperties::dispatch($product)
+                ->delay(now()->addSecond(15));
+        });
+    }
 
     /* #[SearchUsingFullText(['title'])]
      public function toSearchableArray(): array
@@ -54,13 +67,11 @@ class Product extends Model
             //->via('handle')
             ->thenReturn();
 
-        /* II Вариант
+        /* II Вариант (через  helper)
          // Через App/Providers/CatalogServiceProvider(FilterManager)
          foreach(filters()  as $filter) {
             $query = $filter->apply($query);
         }*/
-
-
         /*  I вариант
         $query->when(request('filters.brands'), static function (Builder $q) {
              $q->whereIn('brand_id', request('filters.brands'));
@@ -74,14 +85,19 @@ class Product extends Model
 
     public function scopeSorted(Builder $query): void
     {
-        $query->when(request('sort'), static function (Builder $q) {
+        // через  helper
+        sorter()->run($query);
+
+        // через Facade
+        // Sorter::run($query);
+        /*$query->when(request('sort'), static function (Builder $q) {
             $column = request()->str('sort');
 
             if ($column->contains(['price', 'title'])) {
                 $direction = $column->contains('-') ? 'DESC' : 'ASC';
                 $q->orderBy((string) $column->remove('-'), $direction);
             }
-        });
+        });*/
     }
 
     public function scopeHomePage(Builder $query)
@@ -104,5 +120,16 @@ class Product extends Model
     protected function thumbnailDir(): string
     {
         return 'products';
+    }
+
+    public function properties(): BelongsToMany
+    {
+        return $this->belongsToMany(Property::class)
+            ->withPivot('value');
+    }
+
+    public function optionValues(): BelongsToMany
+    {
+        return $this->belongsToMany(OptionValue::class);
     }
 }
