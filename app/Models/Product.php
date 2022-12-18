@@ -22,7 +22,6 @@ class Product extends Model
     use HasThumbnail;
     use Searchable;
 
-
     protected $fillable = [
         'slug',
         'title',
@@ -55,13 +54,11 @@ class Product extends Model
             //->via('handle')
             ->thenReturn();
 
-        /* II Вариант
+        /* II Вариант (через  helper)
          // Через App/Providers/CatalogServiceProvider(FilterManager)
          foreach(filters()  as $filter) {
             $query = $filter->apply($query);
         }*/
-
-
         /*  I вариант
         $query->when(request('filters.brands'), static function (Builder $q) {
              $q->whereIn('brand_id', request('filters.brands'));
@@ -75,14 +72,19 @@ class Product extends Model
 
     public function scopeSorted(Builder $query): void
     {
-        $query->when(request('sort'), static function (Builder $q) {
+        // через  helper
+        sorter()->run($query);
+
+        // через Facade
+        // Sorter::run($query);
+        /*$query->when(request('sort'), static function (Builder $q) {
             $column = request()->str('sort');
 
             if ($column->contains(['price', 'title'])) {
                 $direction = $column->contains('-') ? 'DESC' : 'ASC';
                 $q->orderBy((string) $column->remove('-'), $direction);
             }
-        });
+        });*/
     }
 
     public function scopeHomePage(Builder $query)

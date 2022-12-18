@@ -15,21 +15,16 @@ class ProductController extends Controller
     {
         $product->load(['optionValues.option']);
 
-        // Просмотренные товары
-        /* $arSeeProductIds = [];
-         $productId = $product->id;
-         if (session()->pull('also.' . $product->id)) {
-             $seeProduct = Product::query()
-                 ->whereIn('id', session()->pull('also.' . $productId))
-                 ->get()
-                 ->keyBy('id');
-             unset($seeProduct->$productId);
-             $arSeeProductIds = array_keys($seeProduct->toArray());
-         }
+        if (session('also')) {
+            $also = Product::query()
+                ->where(static function ($q) use ($product) {
+                    $q->whereIn('id', session('also'))
+                        ->where('id', '<>', $product->id);
+                })
+                ->get();
+        }
 
-         $nextArSeeProductIds = array_merge($arSeeProductIds, [$product->id]);
-         session()->put('also.' . $product->id, $nextArSeeProductIds);
-        */
+        session()->put('also.' . $product->id, $product->id);
 
         $options = $product->optionValues->mapToGroups(static function ($item) {
             return [$item->option->title => $item];
@@ -40,6 +35,7 @@ class ProductController extends Controller
             [
                 'product' => $product,
                 'options' => $options,
+                'also'    => $also ?? null,
             ]
         );
     }
