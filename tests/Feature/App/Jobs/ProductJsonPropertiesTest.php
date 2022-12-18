@@ -7,7 +7,6 @@ namespace Tests\Feature\App\Jobs;
 use App\Jobs\ProductJsonProperties;
 use Database\Factories\ProductFactory;
 use Database\Factories\PropertyFactory;
-use Domain\Catalog\Facades\Sorter;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -39,7 +38,7 @@ final class ProductJsonPropertiesTest extends TestCase
 
         ProductJsonProperties::dispatchSync($product);
 
-        //  обновление всех связей
+        // обновление всех связей
         $product->refresh();
 
         $this->assertNotEmpty($product->json_properties);

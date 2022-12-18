@@ -10,11 +10,11 @@
             </a>
         </h3>
         <ul class="space-y-1 mt-4 text-xxs">
-
-            @foreach($item->json_properties as $property => $value)
-                <li class="flex justify-between text-body"><strong>{{ $property }} </strong>{{  $value }}</li>
-            @endforeach
-
+            @if($item->json_properties)
+                @foreach($item->json_properties as $property => $value)
+                    <li class="flex justify-between text-body"><strong>{{ $property }} </strong>{{  $value }}</li>
+                @endforeach
+            @endif
         </ul>
         <div class="mt-auto pt-6">
             <div class="mb-3 text-sm font-semibold">{{ $item->price }}</div>

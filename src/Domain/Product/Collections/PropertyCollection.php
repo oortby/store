@@ -6,12 +6,10 @@ namespace Domain\Product\Collections;
 
 use Illuminate\Support\Collection;
 
-final class OptionValueCollection extends Collection
+final class PropertyCollection extends Collection
 {
-    public function  keyValues(): OptionValueCollection
+    public function keyValues(): PropertyCollection
     {
-       return  $this->mapToGroups(static function ($item) {
-            return [$item->option->title => $item];
-        });
+        return $this->mapWithKeys(fn($property) => [$property->title => $property->pivot->value]);
     }
 }
