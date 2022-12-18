@@ -10,11 +10,11 @@
             </a>
         </h3>
         <ul class="space-y-1 mt-4 text-xxs">
-            <li class="flex justify-between text-body"><strong>Вес (г)</strong> 92</li>
-            <li class="flex justify-between text-body"><strong>Тип сенсора:</strong> Оптический</li>
-            <li class="flex justify-between text-body"><strong>DPI мыши:</strong> 18000</li>
-            <li class="flex justify-between text-body"><strong>Количество кнопок мыши:</strong> 8</li>
-            <li class="flex justify-between text-body"><strong>Подсветка:</strong> RGB</li>
+
+            @foreach($item->json_properties as $property => $value)
+                <li class="flex justify-between text-body"><strong>{{ $property }} </strong>{{  $value }}</li>
+            @endforeach
+
         </ul>
         <div class="mt-auto pt-6">
             <div class="mb-3 text-sm font-semibold">{{ $item->price }}</div>

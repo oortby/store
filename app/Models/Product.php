@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ProductJsonProperties;
 use Domain\Catalog\Models\Brand;
 use Domain\Catalog\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,11 +32,23 @@ class Product extends Model
         'price',
         'on_home_page',
         'sorting',
+        'json_properties',
 
     ];
     protected $casts = [
-        'price' => PriceCast::class,
+        'price'           => PriceCast::class,
+        'json_properties' => 'array',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::created( static  function (Product $product) {
+            ProductJsonProperties::dispatch($product)
+                ->delay(now()->addSecond(15));
+        });
+    }
 
     /* #[SearchUsingFullText(['title'])]
      public function toSearchableArray(): array

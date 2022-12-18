@@ -10,7 +10,7 @@ trait HasSlug
 {
     protected static function bootHasSlug(): void
     {
-        static::creating(function (Model $item) {
+        static::creating(static function (Model $item) {
             $item->makeSlug();
         });
     }
