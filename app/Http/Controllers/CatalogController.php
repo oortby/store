@@ -15,6 +15,7 @@ class CatalogController extends Controller
     public function __invoke(?Category $category): Factory|View|Application
     {
         return view('catalog.index', new CatalogViewModel($category));
+
         /* return view('catalog.index', [
                  'products'   => CatalogViewModel::class->products($category),
                  'categories' => CatalogViewModel::class->categories(),
