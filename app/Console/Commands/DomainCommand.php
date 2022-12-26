@@ -15,7 +15,7 @@ class DomainCommand extends Command
         'QueryBuilders'
     ];
 
-    protected $signature = 'shop:domain';
+    protected $signature = 'store:domain';
 
     protected $description = 'Make domain';
 

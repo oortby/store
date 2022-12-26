@@ -1,10 +1,11 @@
 <?php
 
+use App\Providers\CartServiceProvider;
 use App\Providers\CatalogServiceProvider;
 use App\Providers\DomainServiceProvider;
 use App\Providers\ViewServiceProvider;
-use Support\Testing\TestingServiceProvider;
 use Illuminate\Support\Facades\Facade;
+use Support\Testing\TestingServiceProvider;
 
 return [
 
@@ -158,7 +159,7 @@ return [
     |
     */
 
-    'providers' => array(
+    'providers' => [
 
         /*
          * Laravel Framework Service Providers...
@@ -204,7 +205,7 @@ return [
         DomainServiceProvider::class,
         CatalogServiceProvider::class,
 
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
