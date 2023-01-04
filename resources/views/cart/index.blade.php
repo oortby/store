@@ -18,8 +18,7 @@
 
         @else
             <!-- Message -->
-            <div class="py-3 px-6 rounded-lg bg-pink text-white">Таблицу можно пролистать вправо →</div>
-
+            {{--<div class="py-3 px-6 rounded-lg bg-pink text-white">Таблицу можно пролистать вправо →</div>--}}
 
 
             <!-- Adaptive table -->

@@ -27,7 +27,7 @@ final class SignUpController extends Controller
             $request->get('email'),
             $request->get('password')
             );*/
-        //$action(NewUserDTO::make(...$request->only('name','email','password')));
+
         $action(NewUserDTO::fromRequest($request));
 
         return redirect()

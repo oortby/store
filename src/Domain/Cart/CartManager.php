@@ -7,6 +7,7 @@ namespace Domain\Cart;
 use Domain\Cart\Contracts\CartIdentityStorageContract;
 use Domain\Cart\Models\Cart;
 use Domain\Cart\Models\CartItem;
+use Domain\Cart\StorageIdentities\FakeIdentityStorage;
 use Domain\Product\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,14 @@ final class CartManager
     public function __construct(
         protected CartIdentityStorageContract $identityStorage
     ) {}
+
+    public static function fake(): void
+    {
+        app()->bind(
+            CartIdentityStorageContract::class,
+            FakeIdentityStorage::class
+        );
+    }
 
     /**
      * @return string
@@ -69,6 +78,15 @@ final class CartManager
         return implode(';', $optionValues);
     }
 
+    public function updateStorageId(
+        string $old,
+        string $current
+    ): void {
+        Cart::query()
+            ->where('storage_id', $old)
+            ->update($this->storedData($current));
+    }
+
     /**
      * @param  Product  $product
      * @param  int  $quantity
@@ -78,7 +96,7 @@ final class CartManager
     public function add(
         Product $product,
         int $quantity = 1,
-        array $optionValues
+        array $optionValues = []
     ): Model|Builder {
         $cart = Cart::query()
             ->updateOrCreate([
@@ -131,7 +149,9 @@ final class CartManager
      */
     public function truncate(): void
     {
-        $this->get()?->delete();
+        if ($this->get()) {
+            $this->get()->delete();
+        }
         $this->forgetCache();
     }
 
@@ -140,7 +160,13 @@ final class CartManager
      */
     public function cartItems(): Collection
     {
-        return $this->get()?->cartItems ?? collect([]);
+        if (!$this->get()) {
+            return collect([]);
+        }
+
+        return $this->get()->cartItems;
+        // ?->  проверка на null, а не false
+        //return $this->get()?->cartItems ?? collect([]);
     }
 
     public function items(): Collection
@@ -150,7 +176,7 @@ final class CartManager
         }
 
         return CartItem::query()
-            ->with(['product' , 'optionValues.option'])
+            ->with(['product', 'optionValues.option'])
             ->whereBelongsTo($this->get())
             ->get();
     }
@@ -180,7 +206,7 @@ final class CartManager
     /**
      * @return mixed
      */
-    public function get()
+    public function get(): mixed
     {
         return Cache::remember(
             $this->cacheKey(),
@@ -191,7 +217,8 @@ final class CartManager
                     ->where('storage_id', $this->identityStorage->get())
                     ->when(auth()->check(),
                         fn(Builder $query) => $query->orWhere('user_id', auth()->id())
-                    )->first() ?? false;
+                    )
+                    ->first() ?? false;
             });
     }
 }
