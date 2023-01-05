@@ -18,6 +18,8 @@ class  RefreshCommand extends Command
         }
 
         $this->call('cache:clear');
+        $this->call('view:clear');
+        $this->call('config:clear');
 
         Storage::deleteDirectory('images/products');
         Storage::deleteDirectory('images/brands');

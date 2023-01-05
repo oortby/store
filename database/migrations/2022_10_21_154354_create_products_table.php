@@ -28,6 +28,10 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->nullOnDelete();
             $table->timestamps();
+
+            $table->unsignedInteger('quantity')
+                ->default(0);
+
         });
 
         Schema::create('category_product', static function (Blueprint $table){

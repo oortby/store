@@ -15,6 +15,7 @@ use Support\Casts\PriceCast;
 
 /**
  * @method static Order|Builder query()
+ * @property mixed $id
  */
 class Order extends Model
 {

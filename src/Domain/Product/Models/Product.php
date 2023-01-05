@@ -34,6 +34,7 @@ class Product extends Model
         'thumbnail',
         'price',
         'on_home_page',
+        'quantity',
         'sorting',
         'json_properties',
 
