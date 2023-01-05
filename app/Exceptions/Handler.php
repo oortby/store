@@ -2,11 +2,10 @@
 
 namespace App\Exceptions;
 
+use DomainException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
-use DomainException;
 
 class  Handler extends ExceptionHandler
 {
@@ -18,7 +17,6 @@ class  Handler extends ExceptionHandler
     protected $levels = [
         //
     ];
-
     /**
      * A list of the exception types that are not reported.
      *
@@ -27,7 +25,6 @@ class  Handler extends ExceptionHandler
     protected $dontReport = [
         //
     ];
-
     /**
      * A list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -44,7 +41,7 @@ class  Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->reportable(function (Throwable $e) {
             if (app()->bound('sentry')) {
@@ -53,12 +50,15 @@ class  Handler extends ExceptionHandler
         });
 
         $this->renderable(function (NotFoundHttpException $e) {
-            // TODO:  404
             return response('404');
         });
 
         $this->renderable(function (DomainException $e) {
             flash()->alert($e->getMessage());
+
+            if (empty(session()->previousUrl()) === true) {
+                return redirect()->route('home');
+            }
 
             return back();
         });

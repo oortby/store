@@ -29,12 +29,14 @@ class DatabaseSeeder extends Seeder
         $optionValues = OptionValueFactory::new()->count(10)->create();
 
         CategoryFactory::new()->count(10)
-            ->has(ProductFactory::new()
-                ->count(10)
-                ->hasAttached($optionValues)
-                ->hasAttached($properties, static function () {
-                    return ['value' => ucfirst(fake()->word())];
-                }))
+            ->has(
+                ProductFactory::new()
+                    ->count(10)
+                    ->hasAttached($optionValues)
+                    ->hasAttached($properties, static function () {
+                        return ['value' => ucfirst(fake()->word())];
+                    })
+            )
             ->create();
     }
 }
